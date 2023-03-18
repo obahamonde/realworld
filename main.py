@@ -23,7 +23,7 @@ html="""
     </form>
     <ul id="messages"></ul>
     <script>
-      var ws = new WebSocket("wss://wssocketio.smartpro.solutions/ws");
+      var ws = new WebSocket("https://wssocketio.smartpro.solutions/ws");
       ws.onmessage = function (event) {
         var messages = document.getElementById("messages");
         var message = document.createElement("li");
