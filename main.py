@@ -2,52 +2,51 @@ from typing import List, Any
 
 from starlette.websockets import WebSocket, WebSocketDisconnect
 
-from pydantic import BaseModel, Field
-from datetime import datetime
-
-from uuid import uuid4
-
-from enum import Enum
 
 from fastapi import FastAPI
 
-from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse
 
 
-class Status(str, Enum):
-
-    success = "success"
-
-    info = "info"
-
-    warning = "warning"
-
-    error = "error"
-
-
-class Notification(BaseModel):
-
-    id: str = Field(default_factory=lambda: str(uuid4()))
-
-    timestamp: str = Field(default_factory=datetime.now().isoformat)
-
-    message: str = Field(...)
-
-    sub: str = Field(...)
-
-    status: Status = Field(default=Status.info)
-
-
-t = Jinja2Templates(directory="templates")
-
+html="""
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Chat</title>
+  </head>
+  <body>
+    <h1>WebSocket Chat</h1>
+    <form action="" onsubmit="sendMessage(event)">
+      <input type="text" id="messageText" autocomplete="on" />
+      <button>Send</button>
+    </form>
+    <ul id="messages"></ul>
+    <script>
+      var ws = new WebSocket("ws://localhost:8000/ws");
+      ws.onmessage = function (event) {
+        var messages = document.getElementById("messages");
+        var message = document.createElement("li");
+        var content = document.createTextNode(event.data);
+        message.appendChild(content);
+        messages.appendChild(message);
+      };
+      function sendMessage(event) {
+        var input = document.getElementById("messageText");
+        ws.send(input.value);
+        input.value = "";
+        event.preventDefault();
+      }
+    </script>
+  </body>
+</html>
+"""
 
 app = FastAPI()
 
 
 @app.get("/")
 async def get():
-    return t.TemplateResponse("index.html", {"request": {}})
-
+    return HTMLResponse(html)
 
 class Notifier:
     def __init__(self):
