@@ -2,6 +2,7 @@ from typing import List, Any
 
 from starlette.websockets import WebSocket, WebSocketDisconnect
 
+from uvicorn import run
 
 from fastapi import FastAPI
 
@@ -128,3 +129,7 @@ async def startup():
     # Prime the push notification generator
 
     await notifier.generator.asend(None)
+
+if __name__ == "__main__":
+
+    run("main:app", host="0.0.0.0", port=8000, reload=True, debug=True)

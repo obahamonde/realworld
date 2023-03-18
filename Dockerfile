@@ -4,9 +4,11 @@ ARG LOCAL_PATH
 
 WORKDIR /app
 
-COPY ${LOCAL_PATH} /app
+COPY ${LOCAL_PATH}/requirements.txt /app
 
 RUN pip install --upgrade pip \
     pip install --no-cache-dir -r requirements.txt
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+COPY ${LOCAL_PATH} /app
+
+CMD ["python", "main.py"]
